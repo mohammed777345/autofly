@@ -3,7 +3,7 @@ import asyncio
 import logging
 import math
 import os
-from pybit.unified_trading import HTTP
+
 
 
 from prettytable import PrettyTable
@@ -210,9 +210,9 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
 
     # creates connection to MetaAPI
    
-    
+    api = MetaApi(API_KEY)
     try:
-        account =  await HTTP(api_key=API_KEY, api_secret=API_SECRET)
+        account =  await api.metatrader_account_api.get_account(ACCOUNT_ID)
          
         initial_state = account.state
         deployed_states = ['DEPLOYING', 'DEPLOYED']
