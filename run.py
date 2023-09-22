@@ -209,7 +209,7 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
     """
 
     # creates connection to MetaAPI
-    api =  HTTP(api_key=API_KEY, api_secret=API_SECRET) 
+   
     
     try:
         account =  HTTP(api_key=API_KEY, api_secret=API_SECRET)
