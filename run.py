@@ -212,7 +212,7 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
    
     
     try:
-        account =  HTTP(api_key=API_KEY, api_secret=API_SECRET)
+        account =  await HTTP(api_key=API_KEY, api_secret=API_SECRET)
          
         initial_state = account.state
         deployed_states = ['DEPLOYING', 'DEPLOYED']
