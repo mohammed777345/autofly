@@ -1,29 +1,38 @@
-#!/usr/bin/env python3
+
 import asyncio
 import logging
 import math
 import os
+from pybit.unified_trading import HTTP
 
 try:
     from typing import Literal
 except ImportError:
     from typing_extensions import Literal
 
-from metaapi_cloud_sdk import MetaApi
+
 from prettytable import PrettyTable
 from telegram import ParseMode, Update
 from telegram.ext import CommandHandler, Filters, MessageHandler, Updater, ConversationHandler, CallbackContext
 
 # MetaAPI Credentials
 API_KEY = os.environ.get("API_KEY")
-ACCOUNT_ID = os.environ.get("ACCOUNT_ID")
+# API_KEY = "MGIXDBOBEVNRBOFUKU"
+# ACCOUNT_ID = os.environ.get("ACCOUNT_ID")
+API_SECRET = os.environ.get("API_SECRET")
+# API_SECRET = "MRVRTORICOYFSMQFYUBANPCEPADWJFFVUBSX"
 
 # Telegram Credentials
 TOKEN = os.environ.get("TOKEN")
+# TOKEN = "6029308168:AAHp2DrOtB94iLVTM0tttascIFSpsf7l2cw"
+
 TELEGRAM_USER = os.environ.get("TELEGRAM_USER")
+# TELEGRAM_USER = "@Mohammednabil212"
+
 
 # Heroku Credentials
 APP_URL = os.environ.get("APP_URL")
+# APP_URL = "https://copyer.onrender.com/"
 
 # Port number for Telegram bot web hook
 PORT = int(os.environ.get('PORT', '8443'))
@@ -40,7 +49,7 @@ CALCULATE, TRADE, DECISION = range(3)
 SYMBOLS = ['AUDCAD', 'AUDCHF', 'AUDJPY', 'AUDNZD', 'AUDUSD', 'CADCHF', 'CADJPY', 'CHFJPY', 'EURAUD', 'EURCAD', 'EURCHF', 'EURGBP', 'EURJPY', 'EURNZD', 'EURUSD', 'GBPAUD', 'GBPCAD', 'GBPCHF', 'GBPJPY', 'GBPNZD', 'GBPUSD', 'NOW', 'NZDCAD', 'NZDCHF', 'NZDJPY', 'NZDUSD', 'USDCAD', 'USDCHF', 'USDJPY', 'XAGUSD', 'XAUUSD']
 
 # RISK FACTOR
-RISK_FACTOR = float(os.environ.get("RISK_FACTOR"))
+RISK_FACTOR = "0.01"
 
 
 # Helper Functions
@@ -210,10 +219,10 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
     """
 
     # creates connection to MetaAPI
-    api = MetaApi(API_KEY)
+    api = HTTP(api_key=API_KEY,api_secret=API_SECRET)
     
     try:
-        account = await api.metatrader_account_api.get_account(ACCOUNT_ID)
+        account = api
         initial_state = account.state
         deployed_states = ['DEPLOYING', 'DEPLOYED']
 
