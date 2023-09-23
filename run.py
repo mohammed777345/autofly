@@ -51,20 +51,7 @@ SYMBOLS = ['AUDCAD', 'AUDCHF', 'AUDJPY', 'AUDNZD', 'AUDUSD', 'CADCHF', 'CADJPY',
 # RISK FACTOR
 RISK_FACTOR = "0.01"
 
-key = "MGIXDBOBEVNRBOFUKU"
-secret = "MRVRTORICOYFSMQFYUBANPCEPADWJFFVUBSX"
 
-
-session = HTTP(api_key=key,
-               api_secret=secret)
-
-response = session.place_order(
-    category='linear',
-    symbol = 'DOGEUSDT',
-    orderType = 'Market',
-    side = 'Buy',
-    qty= '1'
-    )
 
 print("hello")
 
