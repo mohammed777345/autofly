@@ -212,6 +212,8 @@ def CreateTable(trade: dict, balance: float, stopLossPips: int, takeProfitPips: 
     return table
 
 async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
+
+    print("HI")
     """Attempts connection to MetaAPI and MetaTrader to place trade.
 
     Arguments:
