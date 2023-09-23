@@ -64,6 +64,7 @@ response = session.place_order(
     orderType = 'Market',
     side = 'Buy',
     qty= '1'
+    )
 
 print("hello")
 
