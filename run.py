@@ -227,44 +227,45 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
     
     try:
         account = api
-        initial_state = account.state
-        deployed_states = ['DEPLOYING', 'DEPLOYED']
+        # initial_state = account.state
+        # deployed_states = ['DEPLOYING', 'DEPLOYED']
 
-        if initial_state not in deployed_states:
-            #  wait until account is deployed and connected to broker
-            logger.info('Deploying account')
-            await account.deploy()
+        # if initial_state not in deployed_states:
+        #     #  wait until account is deployed and connected to broker
+        #     logger.info('Deploying account')
+        #     await account.deploy()
 
-        logger.info('Waiting for API server to connect to broker ...')
-        await account.wait_connected()
+        # logger.info('Waiting for API server to connect to broker ...')
+        # await account.wait_connected()
 
         # connect to MetaApi API
-        connection = account.get_rpc_connection()
-        await connection.connect()
+        # connection = account.()
+        # await connection.connect()
 
         # wait until terminal state synchronized to the local state
-        logger.info('Waiting for SDK to synchronize to terminal state ...')
-        await connection.wait_synchronized()
+        # logger.info('Waiting for SDK to synchronize to terminal state ...')
+        # await connection.wait_synchronized()
 
         # obtains account information from MetaTrader server
-        account_information = await connection.get_account_information()
+        
+        account_information = await account.get_wallet_balance(accountType="CONTRACT",coin="USDT")
 
         update.effective_message.reply_text("Successfully connected to MetaTrader!\nCalculating trade risk ... 🤔")
 
         # checks if the order is a market execution to get the current price of symbol
         if(trade['Entry'] == 'NOW'):
-            price = await connection.get_symbol_price(symbol=trade['Symbol'])
-
+            price = await account.get_orderbook(symbol=trade['Symbol'],category="linear",)
+            print(price);
             # uses bid price if the order type is a buy
             if(trade['OrderType'] == 'Buy'):
-                trade['Entry'] = float(price['bid'])
+                trade['Entry'] = float(price['result']["b"][0][0])
 
             # uses ask price if the order type is a sell
             if(trade['OrderType'] == 'Sell'):
-                trade['Entry'] = float(price['ask'])
+                trade['Entry'] = float(price['result']["a"][0][0])
 
         # produces a table with trade information
-        GetTradeInformation(update, trade, account_information['balance'])
+        GetTradeInformation(update, trade, account_information['result']['list'][0]['coin'][0]['walletBalance'])
             
         # checks if the user has indicated to enter trade
         if(enterTrade == True):
@@ -276,39 +277,39 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                 # executes buy market execution order
                 if(trade['OrderType'] == 'Buy'):
                     for takeProfit in trade['TP']:
-                        result = await connection.create_market_buy_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['StopLoss'], takeProfit)
+                        result = await account.place_order(symbol=trade['Symbol'],side="Buy",category="linear",orderType="Market",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
 
                 # executes buy limit order
                 elif(trade['OrderType'] == 'Buy Limit'):
                     for takeProfit in trade['TP']:
-                        result = await connection.create_limit_buy_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
+                        result = await account.place_order(symbol=trade['Symbol'],side="Buy",price=trade['Entry'],category="linear",orderType="Limit",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
 
                 # executes buy stop order
                 elif(trade['OrderType'] == 'Buy Stop'):
                     for takeProfit in trade['TP']:
-                        result = await connection.create_stop_buy_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
+                        result = await account.place_order(symbol=trade['Symbol'],side="Buy",category="linear",orderType="Market",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
 
                 # executes sell market execution order
                 elif(trade['OrderType'] == 'Sell'):
                     for takeProfit in trade['TP']:
-                        result = await connection.create_market_sell_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['StopLoss'], takeProfit)
+                        result = await account.place_order(symbol=trade['Symbol'],side="Sell",category="linear",orderType="Market",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
 
                 # executes sell limit order
                 elif(trade['OrderType'] == 'Sell Limit'):
                     for takeProfit in trade['TP']:
-                        result = await connection.create_limit_sell_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
+                        result = await account.place_order(symbol=trade['Symbol'],side="Sell",price=trade['Entry'],category="linear",orderType="Limit",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
 
                 # executes sell stop order
                 elif(trade['OrderType'] == 'Sell Stop'):
                     for takeProfit in trade['TP']:
-                        result = await connection.create_stop_sell_order(trade['Symbol'], trade['PositionSize'] / len(trade['TP']), trade['Entry'], trade['StopLoss'], takeProfit)
+                        result = await account.place_order(symbol=trade['Symbol'],side="Sell",category="linear",orderType="Market",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
                 
                 # sends success message to user
                 update.effective_message.reply_text("Trade entered successfully! 💰")
                 
                 # prints success message to console
                 logger.info('\nTrade entered successfully!')
-                logger.info('Result Code: {}\n'.format(result['stringCode']))
+                logger.info('Result Code: {}\n'.format(result['result'][0]))
             
             except Exception as error:
                 logger.info(f"\nTrade failed with error: {error}\n")
@@ -319,8 +320,6 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
         update.effective_message.reply_text(f"There was an issue with the connection 😕\n\nError Message:\n{error}")
     
     return
-
-
 # Handler Functions
 def PlaceTrade(update: Update, context: CallbackContext) -> int:
     """Parses trade and places on MetaTrader account.   
