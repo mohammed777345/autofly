@@ -223,10 +223,10 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
     """
 
     # creates connection to MetaAPI
-    api = HTTP(api_key=API_KEY,api_secret=API_SECRET)
+   
     
     try:
-        account = api
+        account = HTTP(api_key=API_KEY,api_secret=API_SECRET,testnet=False)
         # initial_state = account.state
         # deployed_states = ['DEPLOYING', 'DEPLOYED']
 
