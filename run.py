@@ -267,7 +267,7 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                 trade['Entry'] = float(price['result']["a"][0][0])
 
         # produces a table with trade information
-        GetTradeInformation(update, trade, account_information['result']['list'][0]['coin'][0]['walletBalance'])
+        GetTradeInformation(update, trade, float(account_information['result']['list'][0]['coin'][0]['walletBalance']))
             
         # checks if the user has indicated to enter trade
         if(enterTrade == True):
