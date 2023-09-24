@@ -37,4 +37,4 @@ wcwidth==0.2.5
 websockets==9.1
 Werkzeug==2.1.2
 pybit==5.5.0
-ccxt==4.0.3
+ccxt==3.1.36
