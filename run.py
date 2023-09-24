@@ -250,13 +250,13 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
 
         # obtains account information from MetaTrader server
         
-        account_information = await account.get_wallet_balance(accountType="CONTRACT",coin="USDT")
+        account_information = account.get_wallet_balance(accountType="CONTRACT",coin="USDT")
 
         update.effective_message.reply_text("Successfully connected to MetaTrader!\nCalculating trade risk ... 🤔")
 
         # checks if the order is a market execution to get the current price of symbol
         if(trade['Entry'] == 'NOW'):
-            price = await account.get_orderbook(symbol=trade['Symbol'],category="linear",)
+            price =  account.get_orderbook(symbol=trade['Symbol'],category="linear",)
             print(price);
             # uses bid price if the order type is a buy
             if(trade['OrderType'] == 'Buy'):
@@ -279,32 +279,32 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                 # executes buy market execution order
                 if(trade['OrderType'] == 'Buy'):
                     for takeProfit in trade['TP']:
-                        result = await account.place_order(symbol=trade['Symbol'],side="Buy",category="linear",orderType="Market",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
+                        result =  account.place_order(symbol=trade['Symbol'],side="Buy",category="linear",orderType="Market",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
 
                 # executes buy limit order
                 elif(trade['OrderType'] == 'Buy Limit'):
                     for takeProfit in trade['TP']:
-                        result = await account.place_order(symbol=trade['Symbol'],side="Buy",price=trade['Entry'],category="linear",orderType="Limit",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
+                        result =  account.place_order(symbol=trade['Symbol'],side="Buy",price=trade['Entry'],category="linear",orderType="Limit",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
 
                 # executes buy stop order
                 elif(trade['OrderType'] == 'Buy Stop'):
                     for takeProfit in trade['TP']:
-                        result = await account.place_order(symbol=trade['Symbol'],side="Buy",category="linear",orderType="Market",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
+                        result =  account.place_order(symbol=trade['Symbol'],side="Buy",category="linear",orderType="Market",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
 
                 # executes sell market execution order
                 elif(trade['OrderType'] == 'Sell'):
                     for takeProfit in trade['TP']:
-                        result = await account.place_order(symbol=trade['Symbol'],side="Sell",category="linear",orderType="Market",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
+                        result =  account.place_order(symbol=trade['Symbol'],side="Sell",category="linear",orderType="Market",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
 
                 # executes sell limit order
                 elif(trade['OrderType'] == 'Sell Limit'):
                     for takeProfit in trade['TP']:
-                        result = await account.place_order(symbol=trade['Symbol'],side="Sell",price=trade['Entry'],category="linear",orderType="Limit",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
+                        result =  account.place_order(symbol=trade['Symbol'],side="Sell",price=trade['Entry'],category="linear",orderType="Limit",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
 
                 # executes sell stop order
                 elif(trade['OrderType'] == 'Sell Stop'):
                     for takeProfit in trade['TP']:
-                        result = await account.place_order(symbol=trade['Symbol'],side="Sell",category="linear",orderType="Market",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
+                        result =  account.place_order(symbol=trade['Symbol'],side="Sell",category="linear",orderType="Market",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
                 
                 # sends success message to user
                 update.effective_message.reply_text("Trade entered successfully! 💰")
