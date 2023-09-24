@@ -228,7 +228,16 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
    
     
     try:
-        account = HTTP(api_key=API_KEY,api_secret=API_SECRET,testnet=False)
+        
+        account = ccxt.bybit({
+            'apiKey': API_KEY,
+            'secret': API_SECRET,})
+        
+        account2 = HTTP(api_key=API_KEY,api_secret=API_SECRET,testnet=False)
+        
+        markets = await account.load_markets(True)
+        
+
         # initial_state = account.state
         # deployed_states = ['DEPLOYING', 'DEPLOYED']
 
@@ -250,13 +259,14 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
 
         # obtains account information from MetaTrader server
         
-        account_information = account.get_wallet_balance(accountType="CONTRACT",coin="USDT")
+        account_information = await account.fetch_balance()
+        account_information2 = account.get_wallet_balance(accountType="CONTRACT",coin="USDT")
 
         update.effective_message.reply_text("Successfully connected to MetaTrader!\nCalculating trade risk ... 🤔")
 
         # checks if the order is a market execution to get the current price of symbol
         if(trade['Entry'] == 'NOW'):
-            price =  account.get_orderbook(symbol=trade['Symbol'],category="linear",)
+            price =  account2.get_orderbook(symbol=trade['Symbol'],category="linear",)
             print(price);
             # uses bid price if the order type is a buy
             if(trade['OrderType'] == 'Buy'):
@@ -267,7 +277,7 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                 trade['Entry'] = float(price['result']["a"][0][0])
 
         # produces a table with trade information
-        GetTradeInformation(update, trade, float(account_information['result']['list'][0]['coin'][0]['walletBalance']))
+        GetTradeInformation(update, trade, float(account_information2['result']['list'][0]['coin'][0]['walletBalance']))
             
         # checks if the user has indicated to enter trade
         if(enterTrade == True):
@@ -279,32 +289,39 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                 # executes buy market execution order
                 if(trade['OrderType'] == 'Buy'):
                     for takeProfit in trade['TP']:
-                        result =  account.place_order(symbol=trade['Symbol'],side="Buy",category="linear",orderType="Market",qty= '%.2f'%(trade['PositionSize'] / len(trade['TP'])),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
+                        params = {
+                            'position_idx': 0, # 0 One-Way Mode, 1 Buy-side, 2 Sell-side, default = 0
+                            'stopPrice': trade['StopLoss'], # mandatory for stop orders
+                            'basePrice': trade['StopLoss']  # mandatory for stop orders
+                            
+                        }
+                        result = await account.createOrder(symbol=trade['Symbol'], type ="Market",side= "Buy", ammount = trade['PositionSize'] / len(trade['TP']) )
+                        # result =  account.place_order(symbol=trade['Symbol'],side="Buy",category="linear",orderType="Market",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
 
                 # executes buy limit order
                 elif(trade['OrderType'] == 'Buy Limit'):
                     for takeProfit in trade['TP']:
-                        result =  account.place_order(symbol=trade['Symbol'],side="Buy",price=trade['Entry'],category="linear",orderType="Limit",qty= '%.2f'%(trade['PositionSize'] / len(trade['TP'])),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
+                        result = await account.createOrder(symbol=trade['Symbol'], type ="Limit",side= "Buy", ammount = trade['PositionSize'] / len(trade['TP']), price=trade['Entry'] )
 
                 # executes buy stop order
                 elif(trade['OrderType'] == 'Buy Stop'):
                     for takeProfit in trade['TP']:
-                        result =  account.place_order(symbol=trade['Symbol'],side="Buy",category="linear",orderType="Market",qty= '%.2f'%(trade['PositionSize'] / len(trade['TP'])),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
+                        result = await account.createOrder(symbol=trade['Symbol'], type ="Limit",side= "Buy", ammount = trade['PositionSize'] / len(trade['TP']), price=price, params=params )
 
                 # executes sell market execution order
                 elif(trade['OrderType'] == 'Sell'):
                     for takeProfit in trade['TP']:
-                        result =  account.place_order(symbol=trade['Symbol'],side="Sell",category="linear",orderType="Market",qty= '%.2f'%(trade['PositionSize'] / len(trade['TP'])),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
+                        result = await account.createOrder(symbol=trade['Symbol'], type ="Market",side= "Sell", ammount = trade['PositionSize'] / len(trade['TP']) )
 
                 # executes sell limit order
                 elif(trade['OrderType'] == 'Sell Limit'):
                     for takeProfit in trade['TP']:
-                        result =  account.place_order(symbol=trade['Symbol'],side="Sell",price=trade['Entry'],category="linear",orderType="Limit",qty= '%.2f'%(trade['PositionSize'] / len(trade['TP'])),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
+                        result = await account.createOrder(symbol=trade['Symbol'], type ="Limit",side= "Sell", ammount = trade['PositionSize'] / len(trade['TP']), price=trade['Entry'] )
 
                 # executes sell stop order
                 elif(trade['OrderType'] == 'Sell Stop'):
                     for takeProfit in trade['TP']:
-                        result =  account.place_order(symbol=trade['Symbol'],side="Sell",category="linear",orderType="Market",qty= '%.2f'%(trade['PositionSize'] / len(trade['TP'])),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
+                        result = await account.createOrder(symbol=trade['Symbol'], type ="Limit",side= "Sell", ammount = trade['PositionSize'] / len(trade['TP']), price=price, params=params )
                 
                 # sends success message to user
                 update.effective_message.reply_text("Trade entered successfully! 💰")
