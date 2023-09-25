@@ -261,7 +261,7 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
         # obtains account information from MetaTrader server
         
         account_information = await account.fetch_balance()
-        account_information2 = account.get_wallet_balance(accountType="CONTRACT",coin="USDT")
+        account_information2 = account2.get_wallet_balance(accountType="CONTRACT",coin="USDT")
 
         update.effective_message.reply_text("Successfully connected to MetaTrader!\nCalculating trade risk ... 🤔")
 
