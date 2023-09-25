@@ -296,33 +296,33 @@ async def ConnectMetaTrader(update: Update, trade: dict, enterTrade: bool):
                             'basePrice': trade['StopLoss']  # mandatory for stop orders
                             
                         }
-                        result = await account.createOrder(symbol=trade['Symbol'], type ="Market",side= "Buy", ammount = trade['PositionSize'] / len(trade['TP']) )
+                        result = await account.createOrder(symbol=trade['Symbol'], type ="Market",side= "Buy", amount = trade['PositionSize'] / len(trade['TP']) )
                         # result =  account.place_order(symbol=trade['Symbol'],side="Buy",category="linear",orderType="Market",qty= trade['PositionSize'] / len(trade['TP']),stopLoss= trade['StopLoss'],takeProfit= takeProfit)
 
                 # executes buy limit order
                 elif(trade['OrderType'] == 'Buy Limit'):
                     for takeProfit in trade['TP']:
-                        result = await account.createOrder(symbol=trade['Symbol'], type ="Limit",side= "Buy", ammount = trade['PositionSize'] / len(trade['TP']), price=trade['Entry'] )
+                        result = await account.createOrder(symbol=trade['Symbol'], type ="Limit",side= "Buy", amount = trade['PositionSize'] / len(trade['TP']), price=trade['Entry'] )
 
                 # executes buy stop order
                 elif(trade['OrderType'] == 'Buy Stop'):
                     for takeProfit in trade['TP']:
-                        result = await account.createOrder(symbol=trade['Symbol'], type ="Limit",side= "Buy", ammount = trade['PositionSize'] / len(trade['TP']), price=price, params=params )
+                        result = await account.createOrder(symbol=trade['Symbol'], type ="Limit",side= "Buy", amount = trade['PositionSize'] / len(trade['TP']), price=price, params=params )
 
                 # executes sell market execution order
                 elif(trade['OrderType'] == 'Sell'):
                     for takeProfit in trade['TP']:
-                        result = await account.createOrder(symbol=trade['Symbol'], type ="Market",side= "Sell", ammount = trade['PositionSize'] / len(trade['TP']) )
+                        result = await account.createOrder(symbol=trade['Symbol'], type ="Market",side= "Sell", amount = trade['PositionSize'] / len(trade['TP']) )
 
                 # executes sell limit order
                 elif(trade['OrderType'] == 'Sell Limit'):
                     for takeProfit in trade['TP']:
-                        result = await account.createOrder(symbol=trade['Symbol'], type ="Limit",side= "Sell", ammount = trade['PositionSize'] / len(trade['TP']), price=trade['Entry'] )
+                        result = await account.createOrder(symbol=trade['Symbol'], type ="Limit",side= "Sell", amount = trade['PositionSize'] / len(trade['TP']), price=trade['Entry'] )
 
                 # executes sell stop order
                 elif(trade['OrderType'] == 'Sell Stop'):
                     for takeProfit in trade['TP']:
-                        result = await account.createOrder(symbol=trade['Symbol'], type ="Limit",side= "Sell", ammount = trade['PositionSize'] / len(trade['TP']), price=price, params=params )
+                        result = await account.createOrder(symbol=trade['Symbol'], type ="Limit",side= "Sell", amount = trade['PositionSize'] / len(trade['TP']), price=price, params=params )
                 
                 # sends success message to user
                 update.effective_message.reply_text("Trade entered successfully! 💰")
