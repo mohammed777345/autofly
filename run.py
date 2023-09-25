@@ -4,6 +4,7 @@ import logging
 import math
 import os
 from pybit.unified_trading import HTTP
+import ccxt.async_support as ccxt
 
 try:
     from typing import Literal
